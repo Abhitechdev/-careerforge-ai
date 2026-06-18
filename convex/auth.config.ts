@@ -1,7 +1,7 @@
 export default {
   providers: [
     {
-      domain: "https://willing-coyote-90.clerk.accounts.dev",
+      domain: "https://carrerforgeai.dpdns.org/",
       applicationID: "convex",
     },
   ]

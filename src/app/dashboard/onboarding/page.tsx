@@ -31,10 +31,14 @@ export default function OnboardingPage() {
     try {
       await completeOnboarding({ experienceLevel });
       toast.success("Welcome to CareerForge AI!");
-      router.push("/dashboard");
+      
+      // Delay navigation slightly to allow Convex's useQuery in the layout to receive the updated `onboardingCompleted: true` state.
+      // Otherwise, the layout will instantly push back to /dashboard/onboarding.
+      setTimeout(() => {
+        router.push("/dashboard");
+      }, 500);
     } catch (e) {
       toast.error("Failed to complete onboarding.");
-    } finally {
       setIsCompleting(false);
     }
   };

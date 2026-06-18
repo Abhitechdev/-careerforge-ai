@@ -13,7 +13,7 @@ import {
 import { CommandMenu } from "@/components/command-menu";
 import { AnnouncementBanner } from "@/components/announcement-banner";
 import { UserButton, useUser } from "@clerk/nextjs";
-import { useQuery } from "convex/react";
+import { useMutation, useQuery } from "convex/react";
 import { api } from "../../../convex/_generated/api";
 import { useAnalytics } from "@/hooks/useAnalytics";
 
@@ -66,9 +66,31 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const router = useRouter();
   const { user } = useUser();
   const dbUser = useQuery(api.users.getCurrentUser, user ? { clerkId: user.id } : "skip");
+  const storeUser = useMutation(api.users.store);
   const { logEvent } = useAnalytics();
   
   const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);
+  const syncedUserIdRef = React.useRef<string | null>(null);
+
+  React.useEffect(() => {
+    if (!user || syncedUserIdRef.current === user.id) return;
+
+    const email =
+      user.primaryEmailAddress?.emailAddress ||
+      user.emailAddresses[0]?.emailAddress ||
+      `${user.id}@clerk.local`;
+
+    syncedUserIdRef.current = user.id;
+    storeUser({
+      clerkId: user.id,
+      email,
+      name: user.fullName || user.username || undefined,
+      avatarUrl: user.imageUrl || undefined,
+    }).catch((error) => {
+      syncedUserIdRef.current = null;
+      console.error("Failed to sync Clerk user to Convex", error);
+    });
+  }, [storeUser, user]);
 
   React.useEffect(() => {
     if (pathname) {

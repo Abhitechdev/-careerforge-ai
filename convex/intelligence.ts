@@ -96,10 +96,6 @@ export const takeSnapshot = mutation({
 
     // Gather metrics
     // 1. ATS Score (avg of all completed analyses)
-    const analyses = await ctx.db
-      .query("atsAnalyses")
-      .filter((q) => q.eq(q.field("overallScore"), q.field("overallScore"))) // Hacky way to get all for user since we don't have userId on atsAnalyses directly. Better: get resumes, then analyses.
-      .collect(); // Not efficient, but we'll do it right:
       
     const resumes = await ctx.db
       .query("resumes")

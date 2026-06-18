@@ -81,12 +81,7 @@ export default function OnboardingPage() {
             </div>
 
             <div className="p-8 border-2 border-dashed border-muted-foreground/25 rounded-2xl bg-card hover:bg-secondary/10 transition-colors">
-              {isUploading ? (
-                <div className="flex flex-col items-center justify-center py-12">
-                  <Loader2 className="h-10 w-10 text-indigo-500 animate-spin mb-4" />
-                  <p className="text-muted-foreground font-medium">Processing your resume...</p>
-                </div>
-              ) : (
+              <div className={isUploading ? "hidden" : "block"}>
                 <UploadDropzone
                   endpoint="resumeUploader"
                   onUploadBegin={() => setIsUploading(true)}
@@ -109,16 +104,33 @@ export default function OnboardingPage() {
                         toast.error("Failed to save resume metadata.");
                         setIsUploading(false);
                       }
+                    } else {
+                      toast.error("Upload finished but no files were returned.");
+                      setIsUploading(false);
                     }
                   }}
                   onUploadError={(error: Error) => {
                     toast.error(`Upload failed: ${error.message}`);
                     setIsUploading(false);
                   }}
+                  content={{
+                    label: "Drag and drop your resume or click to browse",
+                    allowedContent: "Support for PDF or DOCX. Max file size 10MB.",
+                  }}
                   appearance={{
+                    container: "border-none p-0 w-full flex flex-col items-center justify-center",
+                    uploadIcon: "text-indigo-400 mb-4 w-12 h-12",
+                    label: "text-lg font-semibold mb-1 text-foreground",
+                    allowedContent: "text-sm text-muted-foreground mb-6",
                     button: "ut-uploading:bg-indigo-600/50 bg-indigo-600 hover:bg-indigo-700 text-white font-medium px-8 py-2 rounded-md shadow",
                   }}
                 />
+              </div>
+              {isUploading && (
+                <div className="flex flex-col items-center justify-center py-12">
+                  <Loader2 className="h-10 w-10 text-indigo-500 animate-spin mb-4" />
+                  <p className="text-muted-foreground font-medium">Processing your resume...</p>
+                </div>
               )}
             </div>
 

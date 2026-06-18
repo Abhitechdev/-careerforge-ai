@@ -1,11 +1,15 @@
 import { mutation, query } from "./_generated/server";
 import { v } from "convex/values";
 
-async function getOrCreateUser(ctx: any, identity: any) {
-  let user = await ctx.db
+async function getUserByIdentity(ctx: any, identity: any) {
+  return await ctx.db
     .query("users")
     .withIndex("by_clerkId", (q: any) => q.eq("clerkId", identity.subject))
     .unique();
+}
+
+async function getOrCreateUser(ctx: any, identity: any) {
+  let user = await getUserByIdentity(ctx, identity);
 
   if (!user) {
     console.log("User not found in Convex. Auto-creating user record.");
@@ -31,7 +35,8 @@ export const list = query({
     const identity = await ctx.auth.getUserIdentity();
     if (!identity) throw new Error("Unauthorized");
 
-    const user = await getOrCreateUser(ctx, identity);
+    const user = await getUserByIdentity(ctx, identity);
+    if (!user) return [];
 
     return await ctx.db
       .query("resumes")
@@ -50,9 +55,9 @@ export const get = query({
     const resume = await ctx.db.get(args.id);
     if (!resume) throw new Error("Resume not found");
 
-    const user = await getOrCreateUser(ctx, identity);
+    const user = await getUserByIdentity(ctx, identity);
     
-    if (resume.userId !== user._id) {
+    if (!user || resume.userId !== user._id) {
       throw new Error("Unauthorized");
     }
 

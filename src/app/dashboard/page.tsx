@@ -58,7 +58,7 @@ export default function DashboardPage() {
 
   // Take a snapshot once per session on mount for demo purposes
   React.useEffect(() => {
-    if (isLoaded && user && !intelligence) {
+    if (isLoaded && user && intelligence === null) {
       takeSnapshot({ clerkId: user.id }).catch(() => {});
     }
   }, [isLoaded, user, intelligence, takeSnapshot]);

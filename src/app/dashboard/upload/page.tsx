@@ -43,7 +43,7 @@ export default function ResumeUploadPage() {
             "border-indigo-500/50 bg-indigo-500/5"
           }`}
         >
-          {uploadState === "idle" && (
+          <div className={uploadState === "idle" ? "block" : "hidden"}>
             <UploadDropzone
               endpoint="resumeUploader"
               onUploadBegin={() => {
@@ -113,7 +113,7 @@ export default function ResumeUploadPage() {
                 button: "ut-uploading:bg-indigo-600/50 bg-indigo-600 hover:bg-indigo-700 text-white font-medium px-8 py-2 rounded-md shadow",
               }}
             />
-          )}
+          </div>
 
           {uploadState === "uploading" && (
             <div className="w-full max-w-sm mx-auto flex flex-col items-center py-12">
